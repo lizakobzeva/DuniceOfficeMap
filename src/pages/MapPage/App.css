@@ -1,0 +1,35 @@
+.card,
+.trayCard,
+.trayOverlayCard {
+  /* box-sizing: content-box; */
+  border-radius: 3px;
+
+  /* background-color: bisque; */
+  color: black;
+  cursor: grab;
+}
+
+.tray {
+  display: flex;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.canvasWindow {
+  overflow: hidden;
+  border-radius: 3px;
+  border-color: #556b2f;
+  border-width: 1px;
+  border-style: solid;
+  /* background: repeating-linear-gradient(
+      transparent,
+      transparent 20px,
+      yellowgreen 22px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 20px,
+      yellowgreen 22px
+    ); */
+}
