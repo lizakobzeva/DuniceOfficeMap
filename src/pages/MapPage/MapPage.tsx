@@ -12,10 +12,16 @@ import { Addable } from "./Addable";
 import "./App.css";
 import { Canvas } from "./Canvas";
 import { useParams } from "react-router-dom";
-import { getFurniture } from "@/services/BuildOperations/BuildOperations";
-import { AddFurnitureBlock } from "@/components/shared/AddFurnitureBlock";
+import {
+  addFurniture,
+  getFurniture,
+} from "@/services/BuildOperations/BuildOperations";
 import stc from "string-to-color";
-import { User } from "lucide-react";
+import { Plus, User } from "lucide-react";
+import AddBlock from "@/components/shared/AddBlock";
+import { Button } from "@/components/ui/button";
+import { addFurnitureForm, addRoomForm } from "@/lib/constants/forms";
+import { Furniture } from "@/services/OfficesOperations/OfficesOperations.type";
 
 export type Card = {
   id: UniqueIdentifier;
@@ -24,6 +30,7 @@ export type Card = {
   name: string;
   size_x: number;
   size_y: number;
+  is_room?: boolean;
 };
 
 const calculateCanvasPosition = (
@@ -42,7 +49,26 @@ const calculateCanvasPosition = (
 
 const MapPage = () => {
   const { id } = useParams();
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<Card[]>([
+    {
+      fio: "",
+      id: 234,
+      coordinates: { x: 0, y: 0 },
+      name: `кабинет`,
+      size_x: 30,
+      size_y: 40,
+      is_room: true,
+    },
+    {
+      fio: "",
+      id: 23244,
+      coordinates: { x: 0, y: 0 },
+      name: `кухня`,
+      size_x: 30,
+      size_y: 20,
+      is_room: true,
+    },
+  ]);
   //карточки на канвасе
   const [tracedCards, setTracedCards] = useState<Card[]>([]);
   //карточки для добавления
@@ -50,7 +76,6 @@ const MapPage = () => {
   const [draggedTrayCardId, setDraggedTrayCardId] =
     useState<UniqueIdentifier>("");
 
-  // store the current transform from d3
   const [transform, setTransform] = useState(zoomIdentity);
 
   const addDraggedTrayCardToCanvas = ({
@@ -104,6 +129,31 @@ const MapPage = () => {
     });
   }, [id]);
 
+  const addFurnitureFunc = (value: Furniture) => {
+    addFurniture({
+      name: value.name,
+      size_x: Number(value.size_x),
+      size_y: Number(value.size_y),
+      office_id: Number(id),
+      fio: "",
+    });
+  };
+
+  const addRoomFunc = (value: Furniture) => {
+    setCards([
+      ...cards,
+      {
+        fio: value.fio,
+        id: Math.random(),
+        coordinates: { x: 0, y: 0 },
+        name: ` ${value.name}`,
+        size_x: value.size_x,
+        size_y: value.size_y,
+        is_room: true,
+      },
+    ]);
+  };
+
   return (
     <DndContext
       onDragStart={({ active }) => setDraggedTrayCardId(active.id)}
@@ -111,7 +161,30 @@ const MapPage = () => {
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex flex-col h-[75vh] justify-between gap-2">
-          <AddFurnitureBlock updateData={() => {}} />
+          <div className="flex items-center gap-2">
+            <AddBlock
+              trigger={
+                <Button>
+                  <Plus />
+                  Добавить Мебель
+                </Button>
+              }
+              formData={addFurnitureForm}
+              formTitle="Мебель"
+              addFunc={addFurnitureFunc}
+            />
+            <AddBlock
+              trigger={
+                <Button>
+                  <Plus />
+                  Добавить Комнату
+                </Button>
+              }
+              formData={addRoomForm}
+              formTitle="Комната"
+              addFunc={addRoomFunc}
+            />
+          </div>
           <div className="w-80 flex flex-col gap-2">
             {tracedCards.map((trayCard) => {
               if (cards.find((card) => card.id === trayCard.id)) return null;

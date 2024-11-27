@@ -35,8 +35,12 @@ export const Draggable = ({
           <div
             style={{
               position: "absolute",
-              top: `${card.coordinates.y * canvasTransform.k}px`,
-              left: `${card.coordinates.x * canvasTransform.k}px`,
+              top: `${
+                Math.floor(card.coordinates.y / 20) * 20 * canvasTransform.k
+              }px`,
+              left: `${
+                Math.floor(card.coordinates.x / 20) * 20 * canvasTransform.k
+              }px`,
               transformOrigin: "top left",
               ...(transform
                 ? {
@@ -61,6 +65,8 @@ export const Draggable = ({
                 width: `${card.size_x * 20}px`,
                 height: `${card.size_y * 20}px`,
                 backgroundColor: stc(card.name),
+                opacity: card.is_room ? "0.2" : "1",
+                border: card.is_room ? "solid 2px black" : "",
               }}
               className="card flex items-center justify-center"
             >
@@ -71,17 +77,21 @@ export const Draggable = ({
         </ContextMenuTrigger>
         <ContextMenuContent className="z-[100]">
           <p className="justify-center flex items-center font-bold">
-            {`${card.name} : ${card.id} `}
+            {card.is_room ? card.name : `${card.name} : ${card.id} `}
           </p>
 
-          <ContextMenuItem>
-            <DialogTrigger asChild>
-              <p>Назначить сотруднику</p>
-            </DialogTrigger>
-          </ContextMenuItem>
-          <ContextMenuItem>
-            <p>Инвентарь</p>
-          </ContextMenuItem>
+          {!card.is_room && (
+            <>
+              <ContextMenuItem>
+                <DialogTrigger asChild>
+                  <p>Назначить сотруднику</p>
+                </DialogTrigger>
+              </ContextMenuItem>
+              <ContextMenuItem>
+                <p>Инвентарь</p>
+              </ContextMenuItem>
+            </>
+          )}
           <ContextMenuItem
             onClick={() => deleteDraggedTrayCardFromCanvas(card)}
           >

@@ -15,12 +15,22 @@ import { Button } from "../ui/button";
 import { Furniture } from "@/services/OfficesOperations/OfficesOperations.type";
 
 const addFurnitureSchema = z.object({
-  size_x: z.string().min(1, {
-    message: "укажите ширину",
-  }),
-  size_y: z.string().min(1, {
-    message: "укажите длину",
-  }),
+  size_x: z
+    .string()
+    .min(1, {
+      message: "укажите ширину",
+    })
+    .max(1, {
+      message: "значение должно быть меньше 10",
+    }),
+  size_y: z
+    .string()
+    .min(1, {
+      message: "укажите длину",
+    })
+    .max(1, {
+      message: "значение должно быть меньше 10",
+    }),
   name: z.string().min(3, {
     message: "name must be at least 3 characters.",
   }),
@@ -35,8 +45,8 @@ const AddFurnitureForm = ({ closeDialog, onSubmitFunc }: Props) => {
   const form = useForm<z.infer<typeof addFurnitureSchema>>({
     resolver: zodResolver(addFurnitureSchema),
     defaultValues: {
-      size_x: "",
-      size_y: "",
+      size_x: "0",
+      size_y: "0",
       name: "",
     },
   });
