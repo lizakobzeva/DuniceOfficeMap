@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom";
 import { getFurniture } from "@/services/BuildOperations/BuildOperations";
 import { AddFurnitureBlock } from "@/components/shared/AddFurnitureBlock";
 import stc from "string-to-color";
+import { User } from "lucide-react";
 
 export type Card = {
   id: UniqueIdentifier;
@@ -42,7 +43,9 @@ const calculateCanvasPosition = (
 const MapPage = () => {
   const { id } = useParams();
   const [cards, setCards] = useState<Card[]>([]);
+  //карточки на канвасе
   const [tracedCards, setTracedCards] = useState<Card[]>([]);
+  //карточки для добавления
 
   const [draggedTrayCardId, setDraggedTrayCardId] =
     useState<UniqueIdentifier>("");
@@ -80,6 +83,10 @@ const MapPage = () => {
     ]);
   };
 
+  const deleteDraggedTrayCardFromCanvas = (card: Card) => {
+    setCards([...cards.filter(({ id }) => id !== card.id)]);
+  };
+
   useEffect(() => {
     getFurniture(Number(id) || 0).then((data) => {
       if (data) {
@@ -88,7 +95,7 @@ const MapPage = () => {
             fio: item.fio,
             id: item.id,
             coordinates: { x: 0, y: 0 },
-            name: `${item.name}:${item.id}`,
+            name: ` ${item.name}`,
             size_x: item.size_x,
             size_y: item.size_y,
           }))
@@ -119,6 +126,7 @@ const MapPage = () => {
             setCards={setCards}
             transform={transform}
             setTransform={setTransform}
+            deleteDraggedTrayCardFromCanvas={deleteDraggedTrayCardFromCanvas}
           />
         </div>
       </div>
@@ -141,7 +149,25 @@ const MapPage = () => {
           }}
           className="trayOverlayCard"
         >
-          {draggedTrayCardId}
+          <div
+            style={{
+              width: `${
+                tracedCards.filter(({ id }) => id == draggedTrayCardId)[0]
+                  ?.size_x * 20
+              }px`,
+              height: `${
+                tracedCards.filter(({ id }) => id == draggedTrayCardId)[0]
+                  ?.size_y * 20
+              }px`,
+              backgroundColor: stc(
+                tracedCards.filter(({ id }) => id == draggedTrayCardId)[0]?.name
+              ),
+            }}
+            className="card flex items-center justify-center"
+          >
+            {tracedCards.filter(({ id }) => id == draggedTrayCardId)[0]
+              ?.fio && <User />}
+          </div>
         </div>
       </DragOverlay>
     </DndContext>

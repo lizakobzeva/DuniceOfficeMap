@@ -11,11 +11,13 @@ export const Canvas = ({
   setCards,
   transform,
   setTransform,
+  deleteDraggedTrayCardFromCanvas,
 }: {
   cards: Card[];
   setCards: (cards: Card[]) => void;
   transform: ZoomTransform;
   setTransform(transform: ZoomTransform): void;
+  deleteDraggedTrayCardFromCanvas: (card: Card) => void;
 }) => {
   const updateDraggedCardPosition = ({ delta, active }: DragEndEvent) => {
     if (!delta.x && !delta.y) return;
@@ -83,7 +85,12 @@ export const Canvas = ({
       >
         <DndContext onDragEnd={updateDraggedCardPosition}>
           {cards.map((card) => (
-            <Draggable card={card} key={card.id} canvasTransform={transform} />
+            <Draggable
+              deleteDraggedTrayCardFromCanvas={deleteDraggedTrayCardFromCanvas}
+              card={card}
+              key={card.id}
+              canvasTransform={transform}
+            />
           ))}
         </DndContext>
       </div>

@@ -17,7 +17,7 @@ export const Addable = ({ card }: { card: Card }) => {
           }}
           className="card"
         ></div>
-        - {card.name}
+        - {`${card.name} : ${card.id} `}
       </div>
     </div>
   );
