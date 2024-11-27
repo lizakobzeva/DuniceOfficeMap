@@ -22,6 +22,7 @@ import AddBlock from "@/components/shared/AddBlock";
 import { Button } from "@/components/ui/button";
 import { addFurnitureForm, addRoomForm } from "@/lib/constants/forms";
 import { Furniture } from "@/services/OfficesOperations/OfficesOperations.type";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export type Card = {
   id: UniqueIdentifier;
@@ -108,6 +109,24 @@ const MapPage = () => {
     ]);
   };
 
+  const rotateCard = (card: Card) => {
+    setCards([
+      ...cards.filter(({ id }) => id !== card.id),
+      {
+        name: card.name,
+        fio: card.fio,
+        id: card.id,
+        coordinates: {
+          x: card.coordinates.x,
+          y: card.coordinates.y,
+        },
+        size_x: card.size_y,
+        size_y: card.size_x,
+        is_room: card.is_room,
+      },
+    ]);
+  };
+
   const deleteDraggedTrayCardFromCanvas = (card: Card) => {
     setCards([...cards.filter(({ id }) => id !== card.id)]);
   };
@@ -154,13 +173,17 @@ const MapPage = () => {
     ]);
   };
 
+  const saveMap = () => {
+    console.log(cards);
+  };
+
   return (
     <DndContext
       onDragStart={({ active }) => setDraggedTrayCardId(active.id)}
       onDragEnd={addDraggedTrayCardToCanvas}
     >
       <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-col h-[75vh] justify-between gap-2">
+        <div className="flex flex-col h-[83vh] justify-between gap-2">
           <div className="flex items-center gap-2">
             <AddBlock
               trigger={
@@ -185,16 +208,20 @@ const MapPage = () => {
               addFunc={addRoomFunc}
             />
           </div>
-          <div className="w-80 flex flex-col gap-2">
+
+          <ScrollArea className="w-80 flex flex-col gap-2">
             {tracedCards.map((trayCard) => {
               if (cards.find((card) => card.id === trayCard.id)) return null;
 
               return <Addable card={trayCard} key={trayCard.id} />;
             })}
-          </div>
+          </ScrollArea>
+
+          <Button onClick={saveMap}>Сохранить</Button>
         </div>
         <div className="w-3/4">
           <Canvas
+            rotateCard={rotateCard}
             cards={cards}
             setCards={setCards}
             transform={transform}

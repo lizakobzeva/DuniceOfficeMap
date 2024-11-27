@@ -10,16 +10,18 @@ import {
 } from "@/components/ui/context-menu";
 import { Card } from "./MapPage";
 import stc from "string-to-color";
-import { User, X } from "lucide-react";
+import { Move, RotateCcwSquare, User, X } from "lucide-react";
 
 export const Draggable = ({
   card,
   canvasTransform,
   deleteDraggedTrayCardFromCanvas,
+  rotateCard,
 }: {
   card: Card;
   canvasTransform: ZoomTransform;
   deleteDraggedTrayCardFromCanvas: (card: Card) => void;
+  rotateCard: (card: Card) => void;
 }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: card.id,
@@ -53,11 +55,13 @@ export const Draggable = ({
                   }),
             }}
             ref={setNodeRef}
-            {...listeners}
-            {...attributes}
+            {...[!card.is_room ? listeners : []]}
+            {...[!card.is_room ? attributes : []]}
             onPointerDown={(e) => {
-              listeners?.onPointerDown?.(e);
-              e.preventDefault();
+              if (!card.is_room) {
+                listeners?.onPointerDown?.(e);
+                e.preventDefault();
+              }
             }}
           >
             <div
@@ -65,13 +69,25 @@ export const Draggable = ({
                 width: `${card.size_x * 20}px`,
                 height: `${card.size_y * 20}px`,
                 backgroundColor: stc(card.name),
-                opacity: card.is_room ? "0.2" : "1",
+                opacity: card.is_room ? "0.3" : "1",
                 border: card.is_room ? "solid 2px black" : "",
               }}
               className="card flex items-center justify-center"
             >
               {card.fio && <User />}
-              {/* {card.name} */}
+              {card.is_room && (
+                <button
+                  className="cursor-grab"
+                  {...listeners}
+                  {...attributes}
+                  onPointerDown={(e) => {
+                    listeners?.onPointerDown?.(e);
+                    e.preventDefault();
+                  }}
+                >
+                  <Move />
+                </button>
+              )}
             </div>
           </div>
         </ContextMenuTrigger>
@@ -82,20 +98,31 @@ export const Draggable = ({
 
           {!card.is_room && (
             <>
-              <ContextMenuItem>
+              <ContextMenuItem className="cursor-pointer">
                 <DialogTrigger asChild>
                   <p>Назначить сотруднику</p>
                 </DialogTrigger>
               </ContextMenuItem>
-              <ContextMenuItem>
+              <ContextMenuItem className="cursor-pointer">
                 <p>Инвентарь</p>
               </ContextMenuItem>
             </>
           )}
           <ContextMenuItem
+            className="cursor-pointer"
+            onClick={() => rotateCard(card)}
+          >
+            <p className="flex text-blue-300 justify-between items-center gap-2">
+              <RotateCcwSquare />
+              Повернуть
+            </p>
+          </ContextMenuItem>
+
+          <ContextMenuItem
+            className="cursor-pointer"
             onClick={() => deleteDraggedTrayCardFromCanvas(card)}
           >
-            <p className="flex text-red-600 justify-between items-center">
+            <p className="flex text-red-600 justify-between items-center gap-2">
               <X />
               Убрать
             </p>

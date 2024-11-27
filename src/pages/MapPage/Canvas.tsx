@@ -12,12 +12,14 @@ export const Canvas = ({
   transform,
   setTransform,
   deleteDraggedTrayCardFromCanvas,
+  rotateCard,
 }: {
   cards: Card[];
   setCards: (cards: Card[]) => void;
   transform: ZoomTransform;
   setTransform(transform: ZoomTransform): void;
   deleteDraggedTrayCardFromCanvas: (card: Card) => void;
+  rotateCard: (card: Card) => void;
 }) => {
   const updateDraggedCardPosition = ({ delta, active }: DragEndEvent) => {
     if (!delta.x && !delta.y) return;
@@ -80,7 +82,7 @@ export const Canvas = ({
           transformOrigin: "top left",
           transform: `translate3d(${transform.x}px, ${transform.y}px, ${transform.k}px)`,
           position: "relative",
-          height: "75vh",
+          height: "83vh",
         }}
       >
         <DndContext onDragEnd={updateDraggedCardPosition}>
@@ -90,6 +92,7 @@ export const Canvas = ({
               card={card}
               key={card.id}
               canvasTransform={transform}
+              rotateCard={rotateCard}
             />
           ))}
         </DndContext>

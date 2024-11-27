@@ -66,6 +66,7 @@ function AddBlock({ trigger, formData, formTitle, addFunc }: Props) {
           >
             {formData.formItems.map((item) => (
               <FormField
+                key={item.label}
                 control={form.control}
                 name={item.type}
                 render={({ field }) => (

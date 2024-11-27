@@ -6,7 +6,7 @@
 
   /* background-color: bisque; */
   color: black;
-  cursor: grab;
+  cursor: pointer;
 }
 
 .tray {
@@ -22,15 +22,5 @@
   border-width: 1px;
   border-style: solid;
   background: #e0e0e03d;
-  /* background: repeating-linear-gradient(
-      transparent,
-      transparent 20px,
-      yellowgreen 22px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 20px,
-      yellowgreen 22px
-    ); */
+  cursor: all-scroll;
 }

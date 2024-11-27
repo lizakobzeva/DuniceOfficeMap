@@ -31,7 +31,6 @@ Props) {
   const [employeesData, setEmployeesData] = useState<OfficesEmployee[]>([]);
   const [search, setSearch] = useState("");
   const { id } = useParams();
-  console.log(furniture);
 
   const searchEmployeesData = employeesData.filter(({ fio }) =>
     fio.toLowerCase().includes(search.toLowerCase())
@@ -81,7 +80,10 @@ Props) {
         <Input value={search} onChange={(e) => setSearch(e.target.value)} />
         <ScrollArea className="h-[300px] w-full border-none mt-4 rounded-md border p-4">
           {searchEmployeesData.map((employee) => (
-            <div className="border-b flex items-center justify-between py-3">
+            <div
+              key={employee.id}
+              className="border-b flex items-center justify-between py-3"
+            >
               <p>{employee.fio}</p>
               <Link
                 color="#16a34a"
