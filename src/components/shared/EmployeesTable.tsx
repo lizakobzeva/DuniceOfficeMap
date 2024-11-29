@@ -173,6 +173,7 @@ function EmployeesTable<TValue>({ columns, data, updateData }: Props<TValue>) {
                         }}
                         itemId={data[id].id}
                         editFunc={editEmployeeFunc}
+                        updateData={updateData}
                       />
                       <Trash2
                         color="#DC2626"

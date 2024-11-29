@@ -22,14 +22,14 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 
 interface Props {
-  updateData?: () => void;
+  updateData: () => void;
   trigger: ReactElement;
   formData: FormDataType;
   formTitle: string;
   initialData: Record<string, string>;
   itemId: string | number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  editFunc: (itemId: string | number, value: any) => void;
+  editFunc: (itemId: string | number, values: any) => void;
 }
 
 function EditBlock({
@@ -39,10 +39,10 @@ function EditBlock({
   editFunc,
   itemId,
   initialData,
+  updateData,
 }: Props) {
   const [open, setOpen] = useState(false);
-  // const { id } = useParams();
-
+  const [disabled, setDisabled] = useState(false);
   const form = useForm<z.infer<typeof formData.zodSchema>>({
     resolver: zodResolver(formData.zodSchema),
     defaultValues: Object.fromEntries(
@@ -54,8 +54,19 @@ function EditBlock({
   });
 
   async function onSubmit(values: z.infer<typeof formData.zodSchema>) {
+    await setDisabled(true);
     await editFunc(itemId, values);
-    setOpen(false);
+    if (updateData) await updateData();
+    await setOpen(false);
+    form.reset(
+      Object.fromEntries(
+        formData.formItems.map((obj) => [
+          obj.type,
+          initialData[obj.type] || obj.defaultValue,
+        ])
+      )
+    );
+    setDisabled(false);
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -95,7 +106,7 @@ function EditBlock({
               />
             ))}
 
-            <Button type="submit" className="w-full mt-8">
+            <Button disabled={disabled} type="submit" className="w-full mt-8">
               Сохранить
             </Button>
           </form>

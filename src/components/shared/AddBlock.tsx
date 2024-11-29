@@ -54,8 +54,10 @@ function AddBlock({
     await addFunc(values);
     if (updateData) await updateData();
     await setOpen(false);
+    form.reset(formData.formItems.map((obj) => [obj.type, obj.defaultValue]));
     setDisabled(false);
   }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>

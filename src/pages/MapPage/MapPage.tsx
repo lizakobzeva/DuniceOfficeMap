@@ -62,12 +62,19 @@ const MapPage = () => {
     },
     {
       fio: "",
-      id: 23244,
-      coordinates: { x: 606, y: 2 },
-      name: `кухня`,
-      size_x: 30,
-      size_y: 20,
-      is_room: true,
+      id: 4,
+      coordinates: { x: 164, y: 362 },
+      name: ` стол`,
+      size_x: 4,
+      size_y: 2,
+    },
+    {
+      fio: "",
+      id: 1,
+      coordinates: { x: 360, y: 362 },
+      name: ` стол`,
+      size_x: 4,
+      size_y: 2,
     },
   ]); //карточки на канвасе
   const [tracedCards, setTracedCards] = useState<Card[]>([]); //карточки для добавления
