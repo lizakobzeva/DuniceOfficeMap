@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Title from "../ui/title";
@@ -30,8 +31,15 @@ interface Props {
   addFunc: (value: any) => void;
 }
 
-function AddBlock({ trigger, formData, formTitle, addFunc }: Props) {
+function AddBlock({
+  trigger,
+  formData,
+  formTitle,
+  addFunc,
+  updateData,
+}: Props) {
   const [open, setOpen] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   // const { id } = useParams();
 
   const form = useForm<z.infer<typeof formData.zodSchema>>({
@@ -42,15 +50,20 @@ function AddBlock({ trigger, formData, formTitle, addFunc }: Props) {
   });
 
   async function onSubmit(values: z.infer<typeof formData.zodSchema>) {
+    await setDisabled(true);
     await addFunc(values);
-    setOpen(false);
+    if (updateData) await updateData();
+    await setOpen(false);
+    setDisabled(false);
   }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <Title size="md" text={formTitle} />
+          <DialogTitle>
+            <Title size="md" text={formTitle} />
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -83,7 +96,7 @@ function AddBlock({ trigger, formData, formTitle, addFunc }: Props) {
               />
             ))}
 
-            <Button type="submit" className="w-full mt-8">
+            <Button disabled={disabled} type="submit" className="w-full mt-8">
               Сохранить
             </Button>
           </form>

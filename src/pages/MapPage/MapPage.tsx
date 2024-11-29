@@ -7,7 +7,7 @@ import {
 } from "@dnd-kit/core";
 import { Coordinates, DragEndEvent, Translate } from "@dnd-kit/core/dist/types";
 import { ZoomTransform, zoomIdentity } from "d3-zoom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Addable } from "./Addable";
 import "./App.css";
 import { Canvas } from "./Canvas";
@@ -69,10 +69,8 @@ const MapPage = () => {
       size_y: 20,
       is_room: true,
     },
-  ]);
-  //карточки на канвасе
-  const [tracedCards, setTracedCards] = useState<Card[]>([]);
-  //карточки для добавления
+  ]); //карточки на канвасе
+  const [tracedCards, setTracedCards] = useState<Card[]>([]); //карточки для добавления
 
   const [draggedTrayCardId, setDraggedTrayCardId] =
     useState<UniqueIdentifier>("");
@@ -131,22 +129,25 @@ const MapPage = () => {
     setCards([...cards.filter(({ id }) => id !== card.id)]);
   };
 
-  useEffect(() => {
-    getFurniture(Number(id) || 0).then((data) => {
-      if (data) {
-        setTracedCards(
-          data?.map((item) => ({
-            fio: item.fio,
-            id: item.id,
-            coordinates: { x: 0, y: 0 },
-            name: ` ${item.name}`,
-            size_x: item.size_x,
-            size_y: item.size_y,
-          }))
-        );
-      }
-    });
+  const updateFurnitureData = useCallback(async () => {
+    const data = await getFurniture(Number(id) || 0);
+    if (data) {
+      setTracedCards(
+        data?.map((item) => ({
+          fio: item.fio,
+          id: item.id,
+          coordinates: { x: 0, y: 0 },
+          name: ` ${item.name}`,
+          size_x: item.size_x,
+          size_y: item.size_y,
+        }))
+      );
+    }
   }, [id]);
+
+  useEffect(() => {
+    updateFurnitureData();
+  }, [updateFurnitureData]);
 
   const addFurnitureFunc = (value: Furniture) => {
     addFurniture({
@@ -195,6 +196,7 @@ const MapPage = () => {
               formData={addFurnitureForm}
               formTitle="Мебель"
               addFunc={addFurnitureFunc}
+              updateData={updateFurnitureData}
             />
             <AddBlock
               trigger={
@@ -206,6 +208,7 @@ const MapPage = () => {
               formData={addRoomForm}
               formTitle="Комната"
               addFunc={addRoomFunc}
+              // updateData={updateFurnitureData}
             />
           </div>
 
