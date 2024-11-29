@@ -63,7 +63,7 @@ const MapPage = () => {
     {
       fio: "",
       id: 23244,
-      coordinates: { x: 0, y: 0 },
+      coordinates: { x: 606, y: 2 },
       name: `кухня`,
       size_x: 30,
       size_y: 20,
@@ -210,11 +210,13 @@ const MapPage = () => {
           </div>
 
           <ScrollArea className="w-80 flex flex-col gap-2">
-            {tracedCards.map((trayCard) => {
-              if (cards.find((card) => card.id === trayCard.id)) return null;
+            <div className="w-80 flex flex-col gap-2">
+              {tracedCards.map((trayCard) => {
+                if (cards.find((card) => card.id === trayCard.id)) return null;
 
-              return <Addable card={trayCard} key={trayCard.id} />;
-            })}
+                return <Addable card={trayCard} key={trayCard.id} />;
+              })}
+            </div>
           </ScrollArea>
 
           <Button onClick={saveMap}>Сохранить</Button>

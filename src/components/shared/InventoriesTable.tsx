@@ -20,21 +20,24 @@ import { useEffect, useState } from "react";
 
 import { PenLine, Plus, Trash2, UserCog } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { AddInventoryBlock } from "./AddInventoryBlock";
 import { AssignedEmployeeBlock } from "./AssignedEmployeeBlock";
 import {
   Inventory,
   OfficesEmployee,
 } from "@/services/OfficesOperations/OfficesOperations.type";
 import {
+  addInventory,
   attachInventory,
   deleteEmployeeForInventory,
   deleteInventory,
+  editInventory,
 } from "@/services/BuildOperations/BuildOperations";
 import { getOfficesEmployees } from "@/services/OfficesOperations/OfficesOperations";
 import { useParams } from "react-router-dom";
-import { EditInventoryBlock } from "./EditInventoryBlock";
 import { Button } from "../ui/button";
+import AddBlock from "./AddBlock";
+import { addInventoryForm } from "@/lib/constants/forms";
+import EditBlock from "./EditBlock";
 
 interface Props<TValue> {
   columns: ColumnDef<Inventory, TValue>[];
@@ -87,6 +90,17 @@ function InventoriesTable<TValue>({
     await deleteEmployeeForInventory(inventoryId);
     updateData();
   };
+
+  const addInventoryFunc = async (values: { name: string }) => {
+    return addInventory(values.name, id || "");
+  };
+
+  const editInventoryFunc = async (
+    inventoryId: string | number,
+    values: { name: string }
+  ) => {
+    return editInventory(Number(inventoryId), values.name);
+  };
   return (
     <div>
       <div className="flex items-center py-4 justify-between gap-2">
@@ -99,11 +113,22 @@ function InventoriesTable<TValue>({
           className="max-w-sm"
         />
         {localStorage.getItem("role") === "admin" ? (
-          <AddInventoryBlock updateData={updateData} />
+          <AddBlock
+            updateData={updateData}
+            trigger={
+              <Button>
+                <Plus />
+                Добавить оборудование
+              </Button>
+            }
+            formData={addInventoryForm}
+            formTitle={"Оборудование"}
+            addFunc={addInventoryFunc}
+          />
         ) : (
           <Button disabled>
             <Plus />
-            Добавить инвентарь
+            Добавить оборудование
           </Button>
         )}
       </div>
@@ -150,9 +175,16 @@ function InventoriesTable<TValue>({
                         employeesData={employeesData}
                         deleteAttachedUser={deleteAttachedUser}
                       />
-                      <EditInventoryBlock
-                        deFaultInventory={data[id]}
+                      <EditBlock
                         updateData={updateData}
+                        trigger={
+                          <PenLine color="#3B82F6" className="cursor-pointer" />
+                        }
+                        formData={addInventoryForm}
+                        formTitle={"Оборудование"}
+                        initialData={{ name: data[id].name }}
+                        itemId={data[id].id}
+                        editFunc={editInventoryFunc}
                       />
                       <Trash2
                         color="#DC2626"

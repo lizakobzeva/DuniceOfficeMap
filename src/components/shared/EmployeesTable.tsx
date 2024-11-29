@@ -21,14 +21,21 @@ import { useState } from "react";
 import { MonitorCog, PenLine, Plus, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import InventoriesForEmployeeBlock from "./InventoriesForEmployeeBlock";
-import { deleteEmployee } from "@/services/AuthByEmail/AuthByEmail";
-import { OfficesEmployee } from "@/services/OfficesOperations/OfficesOperations.type";
-import { AddEmployeeBlock } from "./AddEmployeeBlock";
-import { EditEmployeeBlock } from "./EditEmployeeBlock";
+import {
+  addOfficesEmployee,
+  deleteEmployee,
+  editOfficesEmployee,
+} from "@/services/AuthByEmail/AuthByEmail";
+import {
+  OfficesEmployee,
+  OfficesUser,
+} from "@/services/OfficesOperations/OfficesOperations.type";
 import { Button } from "../ui/button";
-import { showErrorNotification } from "@/lib/helpers/notification";
-import axios from "axios";
-import { urls } from "@/lib/constants/urls";
+import AddBlock from "./AddBlock";
+import { useParams } from "react-router-dom";
+import { addEmployeeForm } from "@/lib/constants/forms";
+import ImportEmployeesButton from "./ImportEmployeesButton";
+import EditBlock from "./EditBlock";
 
 interface Props<TValue> {
   columns: ColumnDef<OfficesEmployee, TValue>[];
@@ -39,6 +46,7 @@ interface Props<TValue> {
 function EmployeesTable<TValue>({ columns, data, updateData }: Props<TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const { id } = useParams();
 
   const table = useReactTable({
     data,
@@ -59,6 +67,22 @@ function EmployeesTable<TValue>({ columns, data, updateData }: Props<TValue>) {
     updateData();
   };
 
+  const addEmployeeFunc = async (values: Omit<OfficesUser, "office_id">) => {
+    return addOfficesEmployee({
+      ...values,
+      office_id: id || "",
+    });
+  };
+  const editEmployeeFunc = async (
+    employeeId: string | number,
+    values: Omit<OfficesUser, "office_id">
+  ) => {
+    return editOfficesEmployee(String(employeeId), {
+      ...values,
+      office_id: id || "",
+    });
+  };
+
   return (
     <div>
       <div className="flex items-center py-4 justify-between gap-2 flex-wrap">
@@ -73,44 +97,27 @@ function EmployeesTable<TValue>({ columns, data, updateData }: Props<TValue>) {
 
         <div className="flex gap-4">
           {localStorage.getItem("role") === "admin" ? (
-            <AddEmployeeBlock updateData={updateData} />
+            <>
+              <AddBlock
+                updateData={updateData}
+                trigger={
+                  <Button>
+                    <Plus />
+                    Добавить сотрудника
+                  </Button>
+                }
+                formData={addEmployeeForm}
+                formTitle={"Сотрудник"}
+                addFunc={addEmployeeFunc}
+              />
+              <ImportEmployeesButton />
+            </>
           ) : (
             <Button disabled>
               <Plus />
               Добавить сотрудника
             </Button>
           )}
-          <Button disabled={localStorage.getItem("role") !== "admin"}>
-            <label style={{ lineHeight: 0 }}>
-              <input
-                accept=".xlsx;type=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                className="w-0 h-0"
-                type="file"
-                onInput={async (files) => {
-                  if (!files.currentTarget.files) return;
-                  try {
-                    const formData = new FormData();
-                    formData.append("file", files.currentTarget.files[0]); // Use the appropriate field name
-
-                    await axios.post(
-                      `${urls.api}auth/load_employees`,
-                      formData,
-                      {
-                        headers: {
-                          Authorization: `Bearer ${localStorage.getItem(
-                            "access_token"
-                          )}`,
-                        },
-                      }
-                    );
-                  } catch (e) {
-                    showErrorNotification(e as string);
-                  }
-                }}
-              />
-              <p>Импорт сотрудников (Excel)</p>
-            </label>
-          </Button>
         </div>
       </div>
       <div className="rounded-md border">
@@ -152,10 +159,20 @@ function EmployeesTable<TValue>({ columns, data, updateData }: Props<TValue>) {
                   {localStorage.getItem("role") === "admin" ? (
                     <TableCell className="flex items-center justify-between gap-2">
                       <InventoriesForEmployeeBlock id={data[id]?.id} />
-                      <EditEmployeeBlock
-                        employeeId={data[id]?.id}
-                        employee={data[id]}
-                        updateData={updateData}
+
+                      <EditBlock
+                        trigger={
+                          <PenLine color="#3B82F6" className="cursor-pointer" />
+                        }
+                        formData={addEmployeeForm}
+                        formTitle="Сотрудник"
+                        initialData={{
+                          fio: data[id].fio,
+                          position: data[id].position,
+                          email: data[id].email,
+                        }}
+                        itemId={data[id].id}
+                        editFunc={editEmployeeFunc}
                       />
                       <Trash2
                         color="#DC2626"

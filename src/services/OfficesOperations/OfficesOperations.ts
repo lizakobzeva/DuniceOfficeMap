@@ -49,6 +49,19 @@ export const addOffice = async (office: Office) => {
   }
 };
 
+export const getOfficesInventory = async (id: number) => {
+  try {
+    const res = await axiosInstance.get<Inventory[]>(
+      `/offices/inventory/${id}`
+    );
+    return res.data;
+  } catch (e) {
+    const error = e as AxiosError;
+    showErrorNotification(error.message);
+    return false;
+  }
+};
+
 export const getEmployeeInventory = async (id: string) => {
   try {
     const res = await axiosInstance.get<Inventory[]>(

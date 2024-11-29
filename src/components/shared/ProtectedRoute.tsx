@@ -1,9 +1,10 @@
-import Loader from "@/components/ui/loader";
 // import { getUser } from "@/features/GetUser/model/service/GetUser/GetUser";
 import { getLocationQuery } from "@/lib/helpers/getLocationQuery";
 import { showErrorNotification } from "@/lib/helpers/notification";
 import { FC, PropsWithChildren, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "./Loader/Loader";
+import Container from "../ui/container";
 
 export const ProtectedRoute: FC<PropsWithChildren> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +31,12 @@ export const ProtectedRoute: FC<PropsWithChildren> = ({ children }) => {
     setIsLoading(false);
   }, [navigate]);
 
-  if (isLoading) return <Loader />;
+  if (isLoading)
+    return (
+      <Container className="w-full h-[100vh] flex items-center justify-center">
+        <Loader />
+      </Container>
+    );
 
   return children;
 };

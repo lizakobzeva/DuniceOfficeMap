@@ -27,6 +27,8 @@ export const Draggable = ({
     id: card.id,
   });
 
+  const floorConst = card.is_room ? 40 : 20;
+  const zIndex = card.is_room ? 10 : 20;
   return (
     <Dialog>
       <AssignedEmployeeFurniture
@@ -37,11 +39,16 @@ export const Draggable = ({
           <div
             style={{
               position: "absolute",
+              zIndex: zIndex,
               top: `${
-                Math.floor(card.coordinates.y / 20) * 20 * canvasTransform.k
+                Math.floor(card.coordinates.y / floorConst) *
+                floorConst *
+                canvasTransform.k
               }px`,
               left: `${
-                Math.floor(card.coordinates.x / 20) * 20 * canvasTransform.k
+                Math.floor(card.coordinates.x / floorConst) *
+                floorConst *
+                canvasTransform.k
               }px`,
               transformOrigin: "top left",
               ...(transform

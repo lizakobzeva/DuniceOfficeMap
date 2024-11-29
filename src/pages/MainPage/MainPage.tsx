@@ -1,10 +1,14 @@
-import { AddOfficeBlock } from "@/components/shared/AddOfficeBlock";
+import AddBlock from "@/components/shared/AddBlock";
 import OfficeCard from "@/components/shared/OfficeCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Title from "@/components/ui/title";
 import axiosInstance from "@/lib/config/ApiConfig/ApiConfig";
-import { getOffices } from "@/services/OfficesOperations/OfficesOperations";
+import { addOfficeForm } from "@/lib/constants/forms";
+import {
+  addOffice,
+  getOffices,
+} from "@/services/OfficesOperations/OfficesOperations";
 import { Office } from "@/services/OfficesOperations/OfficesOperations.type";
 import { Download, Plus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -27,7 +31,18 @@ const MainPage = () => {
           <div className="w-2/5 flex items-center gap-4 max-lg:w-3/5 max-sm:w-full max-sm:mt-4 flex-wrap justify-end">
             <Input />
             {localStorage.getItem("role") === "admin" ? (
-              <AddOfficeBlock updateData={updateData} />
+              <AddBlock
+                updateData={updateData}
+                trigger={
+                  <Button>
+                    <Plus />
+                    Добавить офис
+                  </Button>
+                }
+                formData={addOfficeForm}
+                formTitle={"Офис"}
+                addFunc={addOffice}
+              />
             ) : (
               <Button disabled>
                 <Plus />
@@ -74,7 +89,18 @@ const MainPage = () => {
       ) : (
         <div className="w-full flex items-center flex-col gap-8 mt-40">
           <Title size="md" text={"У вас нет офисов"} />
-          <AddOfficeBlock updateData={updateData} />
+          <AddBlock
+            updateData={updateData}
+            trigger={
+              <Button>
+                <Plus />
+                Добавить офис
+              </Button>
+            }
+            formData={addOfficeForm}
+            formTitle={"Офис"}
+            addFunc={addOffice}
+          />
         </div>
       )}
     </div>
