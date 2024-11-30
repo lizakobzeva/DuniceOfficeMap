@@ -8,7 +8,6 @@ import {
 import { Coordinates, DragEndEvent, Translate } from "@dnd-kit/core/dist/types";
 import { ZoomTransform, zoomIdentity } from "d3-zoom";
 import { useCallback, useEffect, useState } from "react";
-import { Addable } from "./Addable";
 import "./App.css";
 import { Canvas } from "./Canvas";
 import { useParams } from "react-router-dom";
@@ -22,7 +21,7 @@ import AddBlock from "@/components/shared/AddBlock";
 import { Button } from "@/components/ui/button";
 import { addFurnitureForm, addRoomForm } from "@/lib/constants/forms";
 import { Furniture } from "@/services/OfficesOperations/OfficesOperations.type";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import FreeFurnitureList from "./FreeFurnitureList";
 
 export type Card = {
   id: UniqueIdentifier;
@@ -150,11 +149,11 @@ const MapPage = () => {
         }))
       );
     }
-  }, [id]);
+  }, [id, tracedCards]);
 
   useEffect(() => {
     updateFurnitureData();
-  }, [updateFurnitureData]);
+  }, [updateFurnitureData, id]);
 
   const addFurnitureFunc = (value: Furniture) => {
     addFurniture({
@@ -215,19 +214,11 @@ const MapPage = () => {
               formData={addRoomForm}
               formTitle="Комната"
               addFunc={addRoomFunc}
-              // updateData={updateFurnitureData}
+              updateData={updateFurnitureData}
             />
           </div>
 
-          <ScrollArea className="w-80 flex flex-col gap-2">
-            <div className="w-80 flex flex-col gap-2">
-              {tracedCards.map((trayCard) => {
-                if (cards.find((card) => card.id === trayCard.id)) return null;
-
-                return <Addable card={trayCard} key={trayCard.id} />;
-              })}
-            </div>
-          </ScrollArea>
+          <FreeFurnitureList tracedCards={tracedCards} cards={cards} />
 
           <Button onClick={saveMap}>Сохранить</Button>
         </div>

@@ -54,7 +54,7 @@ function AddBlock({
     await addFunc(values);
     if (updateData) await updateData();
     await setOpen(false);
-    form.reset(formData.formItems.map((obj) => [obj.type, obj.defaultValue]));
+    // form.reset(formData.formItems.map((obj) => [obj.type, obj.defaultValue]));
     setDisabled(false);
   }
 
